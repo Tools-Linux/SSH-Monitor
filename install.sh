@@ -226,7 +226,7 @@ uninstall()
 
     rm -rf "$INSTALL_DIR"
     rm -rf "$SOURCE_DIR"
-    rm- -rf "$COMMAND_DIR/sshmonitor"
+    rm -rf "$COMMAND_DIR/sshmonitor"
 
 
     info "SSH Monitor supprimé."
