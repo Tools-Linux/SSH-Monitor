@@ -1,6 +1,4 @@
-﻿#pragma once
-
-#include "Includes/Whitelist.h"
+﻿#include "Includes/Whitelist.h"
 
 whitelist::whitelist(const std::vector<std::string>& ips) : m_ips(ips) {}
 
