@@ -105,78 +105,55 @@ compile()
 
 install_binary()
 {
+    info "Installation du programme..."
 
-info "Installation du programme..."
-
-mkdir -p "$INSTALL_DIR"
-
-
-echo
-echo "========== DEBUG =========="
-echo "Dossier source :"
-echo "$SOURCE_DIR"
-
-echo
-echo "Contenu du build :"
-ls -lah "$SOURCE_DIR/build"
-
-echo
-echo "Recherche des exécutables :"
-find "$SOURCE_DIR/build" -type f -executable -print
-
-echo
-echo "Recherche SSHMonitor :"
-find "$SOURCE_DIR" -type f -name "SSHMonitor" -print
-
-echo "==========================="
-echo
+    mkdir -p "$INSTALL_DIR"
 
 
-BINARY_PATH=$(find "$SOURCE_DIR/build" -type f -executable -name "$APP_NAME" | head -n 1)
+    # Recherche du binaire compilé
+    BINARY_PATH=$(find "$SOURCE_DIR/build" -type f -executable -name "$APP_NAME" | head -n 1)
 
 
-if [ -z "$BINARY_PATH" ]; then
-
-    error "Binaire introuvable !"
-
-    echo "Tous les fichiers trouvés :"
-    find "$SOURCE_DIR/build" -type f
-
-    exit 1
-
-fi
+    if [ -z "$BINARY_PATH" ]; then
+        error "Binaire introuvable."
+        find "$SOURCE_DIR/build" -type f
+        exit 1
+    fi
 
 
-info "Binaire trouvé : $BINARY_PATH"
+    info "Binaire trouvé : $BINARY_PATH"
 
 
-if [ -f "$INSTALL_DIR/config.json" ]; then
+    # Installation du binaire
+    cp "$BINARY_PATH" "$INSTALL_DIR/$APP_NAME"
 
-    cp "$INSTALL_DIR/config.json" /tmp/ssh-monitor-config.json
-
-fi
-
-
-cp "$BINARY_PATH" "$INSTALL_DIR/$APP_NAME"
-
-
-chmod +x "$INSTALL_DIR/$APP_NAME"
+    chmod +x "$INSTALL_DIR/$APP_NAME"
 
 
 
-if [ -f /tmp/ssh-monitor-config.json ]; then
+    # Installation du config.json
+    if [ -f "$INSTALL_DIR/config.json" ]; then
 
-    cp /tmp/ssh-monitor-config.json "$INSTALL_DIR/config.json"
+        warn "config.json existant détecté, conservation."
 
-    rm /tmp/ssh-monitor-config.json
+    else
 
-    info "Configuration conservée."
+        if [ -f "$SOURCE_DIR/config.json" ]; then
 
-fi
+            cp "$SOURCE_DIR/config.json" "$INSTALL_DIR/config.json"
+
+            info "config.json installé."
+
+        else
+
+            warn "Aucun config.json trouvé dans le repository."
+
+        fi
+
+    fi
 
 
-info "Installation terminée."
-
+    info "Installation terminée."
 }
 
 
