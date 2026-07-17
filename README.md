@@ -33,7 +33,7 @@ SSH Monitor uses a single installation script to **install, update, reinstall, o
 Run the following command:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Tools-Linux/SSH-Monitor/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Tools-Linux/SSH-Monitor/master/install.sh)
 ```
 
 The installer will automatically display the available options.
