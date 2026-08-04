@@ -19,7 +19,7 @@ bool Webhook::sendAlert(const std::string& username, const std::string& ip)
             "\"embeds\":["
                 "{"
                     "\"title\":\"SSH Unauthorized Access\","
-                    "\"description\":\"Une tentative de connexion SSH non autorisée a été détectée.\","
+                    "\"description\":\"Une tentative de connexion SSH inconues a été détectée.\","
                     "\"color\":15158332,"
                     "\"fields\":["
                         "{"
