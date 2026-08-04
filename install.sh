@@ -278,7 +278,8 @@ echo
 echo "1) Installer"
 echo "2) Mettre à jour"
 echo "3) Désinstaller"
-echo "4) Quitter"
+echo "4) Version"
+echo "5) Quitter"
 echo
 
 
@@ -300,6 +301,16 @@ case $CHOICE in
     ;;
 
 4)
+    if [ -f "$SOURCE_DIR/version.txt" ]; then
+        echo "Version: $(cat "$SOURCE_DIR/version.txt")"
+    elif [ -f "$SOURCE_DIR/config.json" ]; then
+        echo "Aucune version trouvée dans le repository."
+    else
+        echo "Version introuvable."
+    fi
+    ;;
+
+5)
     exit 0
     ;;
 

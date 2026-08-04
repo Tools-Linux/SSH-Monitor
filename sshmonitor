@@ -20,7 +20,30 @@ case "$1" in
         ;;
 
     status)
+        if [ -f "/opt/ssh-monitor/version.txt" ]; then
+            echo "Version: $(cat /opt/ssh-monitor/version.txt)"
+        else
+            echo "Version: inconnue"
+        fi
+
         systemctl status "$SERVICE"
+        ;;
+
+    user)
+        echo "Utilisateurs connectés :"
+        # Affiche: utilisateur, adresse distante, heure de connexion, durée approximative
+        who -u | awk 'function to_ts(d,t){ cmd="date -d \""d" "t"\" +%s"; cmd | getline s; close(cmd); return s }
+        { user=$1; login_date=$3; login_time=$4; from=$5; ts=to_ts(login_date,login_time); now=systime(); dur=now-ts; h=int(dur/3600); m=int((dur%3600)/60); printf "%s\t%s\t%s %s\t%02dh%02dm\n", user, from, login_date, login_time, h, m }'
+        ;;
+
+    version)
+        if [ -f "/opt/ssh-monitor/version.txt" ]; then
+            echo "Version: $(cat /opt/ssh-monitor/version.txt)"
+        elif [ -f "./version.txt" ]; then
+            echo "Version: $(cat ./version.txt)"
+        else
+            echo "Version introuvable."
+        fi
         ;;
 
     add)
