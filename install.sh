@@ -107,13 +107,10 @@ compile()
 install_command(){
     info "Installation du programme..."
 
-    if [ -f "$COMMAND_DIR/sshmonitor" ]; then
-        mkdir -p "$COMMAND_DIR"
-    else
-        cp "$SOURCE_DIR/sshmonitor" "$COMMAND_DIR/sshmonitor"
-        chmod +x /usr/local/bin/sshmonitor
-        warn "$COMMAND_DIR Création du script de commande sshmonitor"
-    fi
+    mkdir -p "$COMMAND_DIR"
+    cp "$SOURCE_DIR/sshmonitor" "$COMMAND_DIR/sshmonitor"
+    chmod +x "$COMMAND_DIR/sshmonitor"
+    warn "$COMMAND_DIR Création/maj du script de commande sshmonitor"
 }
 
 
@@ -124,7 +121,6 @@ install_binary()
     mkdir -p "$INSTALL_DIR"
 
 
-    # Recherche du binaire compilé
     BINARY_PATH=$(find "$SOURCE_DIR/build" -type f -executable -name "$APP_NAME" | head -n 1)
 
 
@@ -145,7 +141,6 @@ install_binary()
 
 
 
-    # Installation du config.json
     if [ -f "$INSTALL_DIR/config.json" ]; then
 
         warn "config.json existant détecté, conservation."
@@ -164,6 +159,12 @@ install_binary()
 
         fi
 
+    fi
+
+
+    if [ -f "$SOURCE_DIR/version.txt" ]; then
+        cp "$SOURCE_DIR/version.txt" "$INSTALL_DIR/version.txt"
+        info "version.txt installé."
     fi
 
 

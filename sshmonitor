@@ -31,9 +31,51 @@ case "$1" in
 
     user)
         echo "Utilisateurs connectés :"
-        # Affiche: utilisateur, adresse distante, heure de connexion, durée approximative
-        who -u | awk 'function to_ts(d,t){ cmd="date -d \""d" "t"\" +%s"; cmd | getline s; close(cmd); return s }
-        { user=$1; login_date=$3; login_time=$4; from=$5; ts=to_ts(login_date,login_time); now=systime(); dur=now-ts; h=int(dur/3600); m=int((dur%3600)/60); printf "%s\t%s\t%s %s\t%02dh%02dm\n", user, from, login_date, login_time, h, m }'
+
+        python3 - <<'PY'
+import subprocess, time, datetime, re
+out = subprocess.check_output(['who','-u']).decode(errors='ignore')
+now = time.time()
+for line in out.splitlines():
+    parts = line.split()
+    if not parts: continue
+    user = parts[0]
+    # try to find host in parentheses
+    host = ''
+    for p in parts:
+        if p.startswith('(') and p.endswith(')'):
+            host = p[1:-1]
+            break
+    # find time token HH:MM and optional date YYYY-MM-DD
+    time_token = None
+    date_token = None
+    for p in parts[1:]:
+        if re.match(r'^\d{2}:\d{2}$', p) and time_token is None:
+            time_token = p
+        if re.match(r'^\d{4}-\d{2}-\d{2}$', p) and date_token is None:
+            date_token = p
+    if not time_token:
+        # fallback: try second token
+        if len(parts) > 2:
+            time_token = parts[2]
+    if not time_token:
+        continue
+    if not date_token:
+        date_token = datetime.date.today().isoformat()
+        dt = datetime.datetime.fromisoformat(date_token + ' ' + time_token)
+        ts = dt.timestamp()
+        if ts > now + 12*3600:
+            dt -= datetime.timedelta(days=1)
+            ts = dt.timestamp()
+    else:
+        dt = datetime.datetime.fromisoformat(date_token + ' ' + time_token)
+        ts = dt.timestamp()
+    dur = int(now - ts)
+    h = dur // 3600
+    m = (dur % 3600) // 60
+    target = host if host else (parts[1] if len(parts) > 1 else '')
+    print(f"{user}\t{target}\t{date_token} {time_token}\t{h:02d}h{m:02d}m")
+PY
         ;;
 
     version)
