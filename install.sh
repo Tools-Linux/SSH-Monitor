@@ -170,6 +170,39 @@ install_binary()
     info "Installation terminée."
 }
 
+configure_config()
+{
+    CONFIG_FILE="$INSTALL_DIR/config.json"
+
+    if [ ! -f "$CONFIG_FILE" ]; then
+        warn "config.json introuvable."
+        return
+    fi
+
+    echo
+    info "Configuration de SSH Monitor"
+
+    read -p "Webhook Discord : " WEBHOOK_URL
+
+    read -p "IP(s) à whitelist (séparées par des virgules) : " IPS
+
+
+    WHITELIST=$(echo "$IPS" | jq -R 'split(",") | map(gsub("^\\s+|\\s+$"; ""))')
+
+
+    jq \
+        --arg webhook "$WEBHOOK_URL" \
+        --argjson whitelist "$WHITELIST" \
+        '.webhook_url = $webhook | .whitelist = $whitelist' \
+        "$CONFIG_FILE" > "${CONFIG_FILE}.tmp"
+
+
+    mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+
+    info "Configuration sauvegardée."
+}
+
 
 create_service()
 {
@@ -234,16 +267,17 @@ uninstall()
 }
 
 
-
 install()
 {
     install_dependencies
     clone_or_update
     compile
     install_binary
+
+    configure_config
+
     create_service
     install_command
-
 
     echo
     echo "Démarrer le service maintenant ?"
@@ -252,16 +286,12 @@ install()
 
     read -p "Choix : " START
 
-
     if [ "$START" = "1" ]; then
         start_service
     fi
 
-
     info "Installation terminée."
-    info "You can manage the service with: monitor {start|stop|restart|status}"
 }
-
 
 
 menu()
