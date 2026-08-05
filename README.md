@@ -25,6 +25,7 @@ It is designed to help system administrators quickly detect suspicious SSH activ
 - systemd
 - jq
 - curl
+- python3
 - A Discord Webhook URL
 
 ---
@@ -85,6 +86,8 @@ Show service status:
 sshmonitor status
 ```
 
+This now also displays the installed application version (if `/opt/ssh-monitor/version.txt` is present).
+
 ---
 
 ### Whitelist Management
@@ -117,6 +120,22 @@ Display the whitelist:
 
 ```bash
 sshmonitor list
+```
+
+---
+
+### User / Version
+
+Show currently connected users with login time and approximate session duration:
+
+```bash
+sshmonitor user
+```
+
+Show the installed application version (reads `/opt/ssh-monitor/version.txt` or `./version.txt`):
+
+```bash
+sshmonitor version
 ```
 
 ---
