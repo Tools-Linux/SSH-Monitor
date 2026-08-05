@@ -4,6 +4,7 @@
 #include <ctime>
 
 #include <nlohmann/json.hpp>
+#include <unistd.h>
 
 #include "curl/curl.h"
 
@@ -16,7 +17,7 @@ bool Webhook::sendAlert(const std::string& username, const std::string& ip)
     if (!curl)
         return false;
 
-    // Build JSON payload using nlohmann::json for correctness
+
     std::string timestamp;
     {
         char buffer[64];
@@ -34,7 +35,13 @@ bool Webhook::sendAlert(const std::string& username, const std::string& ip)
     embed["fields"] = nlohmann::json::array();
     embed["fields"].push_back({{"name", "Utilisateur"}, {"value", username}, {"inline", true}});
     embed["fields"].push_back({{"name", "Adresse IP"}, {"value", ip}, {"inline", true}});
-    embed["fields"].push_back({{"name", "Luser"}, {"value", username}, {"inline", true}});
+
+    char hostname[256] = {0};
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+        embed["fields"].push_back({{"name", "Host"}, {"value", std::string("unknown")}, {"inline", true}});
+    } else {
+        embed["fields"].push_back({{"name", "Host"}, {"value", std::string(hostname)}, {"inline", true}});
+    }
     embed["footer"] = nlohmann::json::object();
     embed["footer"]["text"] = "SSH Security Monitor";
     embed["timestamp"] = timestamp;
