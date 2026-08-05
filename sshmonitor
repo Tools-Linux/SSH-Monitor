@@ -165,13 +165,15 @@ PY
 
     *)
         echo "Usage:"
-        echo "  sshmonitor start"
-        echo "  sshmonitor stop"
-        echo "  sshmonitor restart"
-        echo "  sshmonitor status"
-        echo "  sshmonitor add <ip>"
-        echo "  sshmonitor remove <ip>"
-        echo "  sshmonitor list"
+        echo "  sshmonitor start           # start the service"
+        echo "  sshmonitor stop            # stop the service"
+        echo "  sshmonitor restart         # restart the service"
+        echo "  sshmonitor status          # show service status and installed version"
+        echo "  sshmonitor user            # list connected users with login time and duration"
+        echo "  sshmonitor version         # show installed version"
+        echo "  sshmonitor add <ip>        # add IP to whitelist"
+        echo "  sshmonitor remove <ip>     # remove IP from whitelist"
+        echo "  sshmonitor list            # display whitelist"
         exit 1
         ;;
 esac
