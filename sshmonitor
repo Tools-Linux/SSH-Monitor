@@ -20,8 +20,26 @@ case "$1" in
         ;;
 
     status)
-        if [ -f "/opt/ssh-monitor/version.txt" ]; then
-            echo "Version: $(cat /opt/ssh-monitor/version.txt)"
+        get_version() {
+            local f="$1"
+            if [ ! -f "$f" ]; then
+                echo ""
+                return
+            fi
+            # read file, strip CRLF
+            local content
+            content=$(tr -d '\r' < "$f")
+
+            if echo "$content" | grep -q "="; then
+                echo "$content" | sed -n 's/^[[:space:]]*[Vv]ersion[[:space:]]*=\s*//p' | head -n1
+            else
+                echo "$content" | head -n1
+            fi
+        }
+
+        ver=$(get_version /opt/ssh-monitor/version.txt)
+        if [ -n "$ver" ]; then
+            echo "Version: $ver"
         else
             echo "Version: inconnue"
         fi
@@ -79,10 +97,28 @@ PY
         ;;
 
     version)
-        if [ -f "/opt/ssh-monitor/version.txt" ]; then
-            echo "Version: $(cat /opt/ssh-monitor/version.txt)"
-        elif [ -f "./version.txt" ]; then
-            echo "Version: $(cat ./version.txt)"
+        get_version() {
+            local f="$1"
+            if [ ! -f "$f" ]; then
+                echo ""
+                return
+            fi
+            local content
+            content=$(tr -d '\r' < "$f")
+            if echo "$content" | grep -q "="; then
+                echo "$content" | sed -n 's/^[[:space:]]*[Vv]ersion[[:space:]]*=\s*//p' | head -n1
+            else
+                echo "$content" | head -n1
+            fi
+        }
+
+        ver=$(get_version /opt/ssh-monitor/version.txt)
+        if [ -z "$ver" ] && [ -f ./version.txt ]; then
+            ver=$(get_version ./version.txt)
+        fi
+
+        if [ -n "$ver" ]; then
+            echo "Version: $ver"
         else
             echo "Version introuvable."
         fi
